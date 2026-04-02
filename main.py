@@ -122,6 +122,26 @@ def average_mac_time_ms(input_matrix: Matrix, filter_matrix: Matrix, repeats: in
     return ((end - start) * 1000.0) / repeats
 
 
+def print_mode1_multiplication_preview(pattern: Matrix, filter_a: Matrix, filter_b: Matrix) -> None:
+    print("\n[곱셈 미리보기]")
+    print("같은 칸끼리 곱해서 더해요.")
+    print("예시(첫 줄):")
+
+    a_row = " + ".join(
+        f"({int(pattern[0][j]) if pattern[0][j].is_integer() else pattern[0][j]}x"
+        f"{int(filter_a[0][j]) if filter_a[0][j].is_integer() else filter_a[0][j]})"
+        for j in range(3)
+    )
+    b_row = " + ".join(
+        f"({int(pattern[0][j]) if pattern[0][j].is_integer() else pattern[0][j]}x"
+        f"{int(filter_b[0][j]) if filter_b[0][j].is_integer() else filter_b[0][j]})"
+        for j in range(3)
+    )
+
+    print(f"A 첫 줄: {a_row}")
+    print(f"B 첫 줄: {b_row}")
+
+
 def generate_cross_pattern(size: int) -> Matrix:
     center = size // 2
     matrix = [[0.0 for _ in range(size)] for _ in range(size)]
@@ -141,16 +161,18 @@ def generate_x_pattern(size: int) -> Matrix:
 
 def mode_user_input() -> None:
     print("\n#----------------------------------------")
-    print("# [1] 필터 입력")
+    print("# 1단계: 기준 그림(필터) 2개 넣기")
     print("#----------------------------------------")
     filter_a = read_matrix_from_console(3, "필터 A (3줄 입력, 공백 구분)")
     filter_b = read_matrix_from_console(3, "필터 B (3줄 입력, 공백 구분)")
-    print("필터 저장 완료")
+    print("저장 완료: A, B 필터를 기억했어요.")
 
     print("\n#----------------------------------------")
-    print("# [2] 패턴 입력")
+    print("# 2단계: 맞춰볼 그림(패턴) 넣기")
     print("#----------------------------------------")
     pattern = read_matrix_from_console(3, "패턴 (3줄 입력, 공백 구분)")
+
+    print_mode1_multiplication_preview(pattern, filter_a, filter_b)
 
     score_a = mac_score(pattern, filter_a)
     score_b = mac_score(pattern, filter_b)
@@ -165,15 +187,15 @@ def mode_user_input() -> None:
     perf_ms = average_mac_time_ms(pattern, filter_a, REPEATS)
 
     print("\n#----------------------------------------")
-    print("# [3] MAC 결과")
+    print("# 3단계: 점수 비교 결과")
     print("#----------------------------------------")
     print(f"A 점수: {score_a}")
     print(f"B 점수: {score_b}")
     print(f"연산 시간(평균/{REPEATS}회): {perf_ms:.6f} ms")
     if decision == "판정 불가":
-        print(f"판정: 판정 불가 (|A-B| < {EPSILON})")
+        print(f"판정: 판정 불가 (두 점수 차이가 아주 작아요: |A-B| < {EPSILON})")
     else:
-        print(f"판정: {decision}")
+        print(f"판정: {decision}가 더 닮았어요!")
 
 
 def load_json_data(path: Path) -> Dict:
